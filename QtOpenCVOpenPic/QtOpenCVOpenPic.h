@@ -2,6 +2,8 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_QtOpenCVOpenPic.h"
+#include <opencv2/opencv.hpp>
+
 
 class QtOpenCVOpenPic : public QMainWindow
 {
@@ -22,4 +24,5 @@ private:
     QImage m_imgSrc;
     QImage m_img2Show;
     QPixmap m_pix2Show;
+    cv::Mat m_matOpenImage;
 };
