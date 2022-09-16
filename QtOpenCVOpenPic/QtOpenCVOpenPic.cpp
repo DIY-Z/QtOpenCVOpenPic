@@ -4,6 +4,7 @@
 
 QtOpenCVOpenPic::QtOpenCVOpenPic(QWidget *parent)
     : QMainWindow(parent)
+    , m_stThreadGetCamPic(this)
 {
     ui.setupUi(this);
 
@@ -15,6 +16,23 @@ QtOpenCVOpenPic::QtOpenCVOpenPic(QWidget *parent)
     //cv::waitKey(0);
 
     bool bRet = (bool)connect(ui.pBtnOpenPic, &QPushButton::clicked, this, &QtOpenCVOpenPic::onOpenPic);
+
+    //将
+    connect(&m_stThreadGetCamPic, &ThreadGetCamPic::sigSendCurImg, this, &QtOpenCVOpenPic::onFreshCurImg);
+    connect(ui.pBtnOpenCamera, &QPushButton::clicked, this, &QtOpenCVOpenPic::onOpenCamera);
+
+    /*
+    cv::VideoCapture stVideoCapture("D:\\FaceForensics++\\original_sequences\\youtube\\c23\\videos\\000.mp4");
+    cv::Mat matTemp;
+    while (true) {
+        stVideoCapture >> matTemp;
+        if (matTemp.empty()) continue;
+
+        cv::imshow("Hello", matTemp);
+        cv::waitKey(30);
+    }
+    */
+    
 }
 
 QtOpenCVOpenPic::~QtOpenCVOpenPic()
@@ -22,6 +40,7 @@ QtOpenCVOpenPic::~QtOpenCVOpenPic()
 
 void QtOpenCVOpenPic::resizeEvent(QResizeEvent * event)
 {
+    //FastTransformation适用于视频的显示，SmoothTransformation适用于图像的显示
     m_img2Show = m_imgSrc.scaled(ui.labelPicture->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     
     m_pix2Show = QPixmap::fromImage(m_img2Show);
@@ -29,10 +48,34 @@ void QtOpenCVOpenPic::resizeEvent(QResizeEvent * event)
     ui.labelPicture->setPixmap(m_pix2Show);
 }
 
+void QtOpenCVOpenPic::onFreshCurImg(const QImage& img)
+{
+    m_imgSrc = img.copy();   //如果对视频中的帧图像或者摄像头拍到的视频的图像帧有用处的话,可以先将其暂存
+
+    m_img2Show = m_imgSrc.scaled(ui.labelPicture->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+
+    m_pix2Show = QPixmap::fromImage(m_img2Show);
+
+    ui.labelPicture->setPixmap(m_pix2Show);
+}
+
+void QtOpenCVOpenPic::onOpenCamera()
+{
+    //启动这个线程
+    m_stThreadGetCamPic.start();
+}
+
 
 
 void QtOpenCVOpenPic::onOpenPic()
 {
+
+    if (m_stThreadGetCamPic.isRunning())   //如果在点击"open image"按钮前已经打开了摄像头,这时就要关闭那个线程
+    {
+        m_stThreadGetCamPic.terminate();
+        m_stThreadGetCamPic.wait();
+    }
+
     QString strFileName = QFileDialog::getOpenFileName(this,
         tr("Open Image"), "/home/", tr("Image Files (*.png *.jpg *.bmp)"));
 

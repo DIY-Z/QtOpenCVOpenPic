@@ -50,6 +50,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="pBtnOpenCamera">
+        <property name="text">
+         <string>OpenCamera</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="pBtnOpenPic">
         <property name="text">
          <string>OpenImage</string>
