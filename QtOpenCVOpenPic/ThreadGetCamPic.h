@@ -14,6 +14,7 @@ public:
 
 	void run();
 
+//signals是修饰信号函数的关键字
 signals:
 	void sigSendCurImg(const QImage& img);
 

@@ -15,6 +15,7 @@ QtOpenCVOpenPic::QtOpenCVOpenPic(QWidget *parent)
     //cv::imshow("一张图像", matOpenImage);
     //cv::waitKey(0);
 
+    //参数分别为:发送者,发送者的一个信号函数,接收者,接收者的一个槽函数
     bool bRet = (bool)connect(ui.pBtnOpenPic, &QPushButton::clicked, this, &QtOpenCVOpenPic::onOpenPic);
 
     //将

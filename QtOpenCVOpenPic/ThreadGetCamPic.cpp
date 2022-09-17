@@ -39,6 +39,7 @@ void ThreadGetCamPic::run()
         cvtColor(matTemp, matTemp, cv::COLOR_BGR2RGB);
 
         imgTemp = QImage(matTemp.data, matTemp.cols, matTemp.rows, matTemp.step, QImage::Format_RGB888).copy();
+        //emit关键字用于发出信号,当发送信号时,imgTemp信息也会一并发出
         emit sigSendCurImg(imgTemp);
         msleep(20);
     }
